@@ -25,7 +25,7 @@ angular
     }
 
 
-    console.log(moment().format('MMMM'));
+   // console.log(moment().format('MMMM'));
     
 
     //get all associates
@@ -64,11 +64,7 @@ angular
 
           DashboardFactory.getAssociateDetails(teamId).then(
             function (success) {
-              // $scope.associateList.associateName = success.data.name;
-
-
-              //$scope.teamAssociateDetails = success.data;
-              //console.log("TEAM MEMBER DETAILS", success.data);
+              
 
               success.data.forEach(function (element) {
                 var eachAssociate = {
@@ -81,10 +77,11 @@ angular
                 DashboardFactory.getScrumPoints(memberID).then(
                   function (success) {
                     $scope.member = success.data;
-                    //console.log("assdfg",success.data);
                     var memberPoints = 0;
                     for (var eachPoint = 0; eachPoint < success.data.length; eachPoint++) 
                     {
+                      var today = success.data[eachPoint].created_at;
+                      if(moment().format('MM') === moment(today).format('MM'))
                       memberPoints += parseInt(success.data[eachPoint].point);
                     }
                     eachAssociate.points = memberPoints;
