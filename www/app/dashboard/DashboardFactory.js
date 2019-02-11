@@ -8,33 +8,6 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
         loggedInMaster: {}
     };
 
-
-
-    //get all associates
-
-    factory.getTeamList = function () {
-        var d = $q.defer();
-        $http({
-
-            method: 'GET',
-            url: 'http://10.182.234.181:1337/associates/',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(function (success) {
-            // factory.teamList = success.data.documents;
-            d.resolve(success)
-            // alert(success)
-
-            //alert("User has created Successfully" + success)
-        }, function (error) {
-            d.reject(error)
-            // alert("Error. while created user Try Again!" + success);
-        });
-
-        return d.promise;
-    };
-
     //get all details of logged in user
 
     factory.getLoggedInUserDetails = function (obj) {
@@ -93,22 +66,19 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
     //get detials of logged in master details
 
-    factory.getMasterDetails = function (obj) {
+    factory.checkUserType = function (loggedUserId) {
         var d = $q.defer();
         $http({
 
             method: 'GET',
-            url: 'http://10.182.234.181:1337/masters?associateId=' + obj,
-            data: obj,
+            url: 'http://10.182.234.181:1337/masters?associateId=' + loggedUserId,
+            data: loggedUserId,
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(function (success) {
             factory.loggedInMaster = success.data;
             d.resolve(success)
-            // alert(success)
-
-            //alert("User has created Successfully" + success)
         }, function (error) {
             d.reject(error)
             // alert("Error. while created user Try Again!" + success);
