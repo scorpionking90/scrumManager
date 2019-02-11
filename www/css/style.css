@@ -1,5 +1,8 @@
 /* Empty. Add your own CSS if you like */
+
+
 /* Empty. Add your own CSS if you like */
+
 .add_button {
     border-color: transparent;
     background-color: #23d547;
@@ -20,39 +23,43 @@
     line-height: 42px;
     cursor: pointer;
     top: -18px;
-    width:46px;
-    }
-     
-    .pinb
-    {
+    width: 46px;
+}
+
+.pinb {
     position: absolute;
     top: 9px;
     right: 15px;
     bottom: 9px;
     font-size: x-large;
-    }
-     
-    .dash
-    { width:60px;
+}
+
+.dash {
+    width: 60px;
     left: 10px;
     position: absolute;
-    }
-    .points
-    { width:60px;
+}
+
+.points {
+    width: 60px;
     left: 90px;
     position: absolute;
-    }
-    .rewards
-    { width:60px;
+}
+
+.rewards {
+    width: 60px;
     right: 90px;
     position: absolute;
-    }
-    .history
-    { width:60px;
+}
+
+.history {
+    width: 60px;
     right: 10px;
     position: absolute;
-    }
-    /* .generatepin
+}
+
+
+/* .generatepin
     {
         border-color: transparent;
         background-color: #33cd5f;
@@ -72,32 +79,41 @@
             float:right;
 
     } */
-    .button.button-balanced {
-        border-color: transparent;
-        background-color: #33cd5f;
-        font-family: fantasy;
-        font-size: 28px;
-    }
 
-    .button.button-assertive {
-        border-color: transparent;
-        background-color: #ef473a;
-        color: #fff;
-        font-family: fantasy;
-        font-size: 30px;
-        width: 33px;
-    }
+.button.button-balanced {
+    border-color: transparent;
+    background-color: #33cd5f;
+    font-family: fantasy;
+    font-size: 28px;
+}
 
-    .pin{
-        text-align: center;
-        font-size: xx-large;
-    }
-    .item-note {
-        float: right;
-        color: #444;
-        font-size: 14px;
-    }
-    /* .item
-    {
-    top: -650px;
-    } */
+.button.button-assertive {
+    border-color: transparent;
+    background-color: #ef473a;
+    color: #fff;
+    font-family: fantasy;
+    font-size: 30px;
+    width: 33px;
+}
+
+.pin {
+    text-align: center;
+    font-size: xx-large;
+}
+
+.item-note {
+    float: right;
+    color: #444;
+    font-size: 14px;
+}
+
+.graphCard {
+    width: auto;
+    height: max-content;
+    border-radius: 0px !important;
+}
+
+
+/* .has-tabs-bottom {
+    bottom: 93px;
+} */

@@ -1,46 +1,59 @@
 <ion-view title="Home" class="home-view">
-  <div class="bar bar-header bar-positive">
-    <h1 class="title">Scrum Manager</h1>
+    <div class="bar bar-header bar-positive">
+        <h1 class="title">Scrum Manager</h1>
+        <button class="button button-balanced" id="generateNumber" ng-click="selectTeam()" ng-show="isMaster === true">+</button>
+    </div>
+    <ion-content class="has-header has-tabs-bottom">
+        <ion-tabs class="tabs-positive tabs-icon-top">
+            <ion-tab class="dash" title="Dashboard" icon-on="ion-bookmark" icon-off="ion-bookmark">
+                <div class="card graphCard">
+                    <div class="item item-divider">
+                        {{teamName}}'s Chart
+                    </div>
+                    <div class="item item-text-wrap">
+                        <canvas id="teamChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
 
-    <button class="button button-balanced" id="generateNumber" ng-click="selectTeam()" ng-show="isMaster === true">+</button>
-  </div>
-  <ion-content class="has-header">
-    <ion-tabs class="tabs-positive tabs-icon-top">
-      <ion-tab class="dash" title="Dashboard" icon-on="ion-bookmark" icon-off="ion-bookmark">
-          <div class="item item-text-wrap">
-        <canvas id="teamChart" width="400" height="400"></canvas>
-        </div>
-      </ion-tab>
+                <div class="card graphCard">
+                    <div class="item item-divider">
+                        {{teamName}}'s Chart
+                    </div>
+                    <div class="item item-text-wrap">
+                        <canvas id="myChart1" width="400" height="400"></canvas>
+                    </div>
+                </div>
+            </ion-tab>
 
-      <ion-tab title="Scrum Points" class="points" icon-on="ion-clock" icon-off="ion-clock">
-        <div class="list">
-          <div ng-repeat="user in teamAssociateDetails.associates">
+            <ion-tab title="Scrum Points" class="points" icon-on="ion-clock" icon-off="ion-clock">
+                <div class="list">
+                    <div ng-repeat="user in teamAssociateDetails.associates">
 
-            <div class="item" ng-if="!isMaster">
-                {{user.name}}
-                <span class="item-note">
-                  {{user.points}}
-                </span>
-              </div>
+                        <div class="item" ng-if="!isMaster">
+                            {{user.name}}
+                            <span class="item-note">
+                              {{user.points}}
+                            </span>
+                        </div>
 
-            <div class="item item-divider" ng-if="isMaster">
-            {{user.name}}
-            </div>
+                        <div class="item item-divider" ng-if="isMaster">
+                            {{user.name}}
+                        </div>
 
-            <div class="item" ng-repeat="associate in user.associates">
-              {{associate.name}}
-            </div>
-            
-          </div>
-        </div>
-      </ion-tab>
+                        <div class="item" ng-repeat="associate in user.associates">
+                            {{associate.name}}
+                        </div>
 
-      <button class="add_button icon ion-android-add-circle" ng-click="enterPinPopup()" ng-disabled=""></button>
-      <ion-tab class="rewards" title="Agile Reward" icon-on="ion-bookmark" icon-off="ion-bookmark">
-      </ion-tab>
+                    </div>
+                </div>
+            </ion-tab>
 
-      <ion-tab class="history" title="History" icon-on="ion-bookmark" icon-off="ion-bookmark">
-      </ion-tab>
-    </ion-tabs>
-  </ion-content>
+            <button class="add_button icon ion-android-add-circle" ng-click="enterPinPopup()" ng-disabled=""></button>
+            <ion-tab class="rewards" title="Agile Reward" icon-on="ion-bookmark" icon-off="ion-bookmark">
+            </ion-tab>
+
+            <ion-tab class="history" title="History" icon-on="ion-bookmark" icon-off="ion-bookmark">
+            </ion-tab>
+        </ion-tabs>
+    </ion-content>
 </ion-view>

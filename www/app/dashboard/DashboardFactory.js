@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('starter').factory("DashboardFactory", function ($q, $http) {
+angular.module('starter').factory("DashboardFactory", function($q, $http) {
     var factory = {
         teamList: [],
         checkedPin: null,
@@ -10,7 +10,7 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
     //get all details of logged in user
 
-    factory.getLoggedInUserDetails = function (obj) {
+    factory.getLoggedInUserDetails = function(obj) {
         var d = $q.defer();
         $http({
 
@@ -20,15 +20,15 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (success) {
+        }).then(function(success) {
             factory.loggedInUser = success.data;
             d.resolve(success)
-            // alert(success)
+                // alert(success)
 
             //alert("User has created Successfully" + success)
-        }, function (error) {
+        }, function(error) {
             d.reject(error)
-            // alert("Error. while created user Try Again!" + success);
+                // alert("Error. while created user Try Again!" + success);
         });
 
         return d.promise;
@@ -37,7 +37,7 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
     // get associates of logged in user's teams
 
-    factory.getAssociateDetails = function (obj) {
+    factory.getAssociateDetails = function(obj) {
         var d = $q.defer();
         $http({
 
@@ -48,15 +48,15 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (success) {
+        }).then(function(success) {
             factory.loggedInUserTeam = success.data;
             d.resolve(success)
-            // alert(success)
+                // alert(success)
 
             //alert("User has created Successfully" + success)
-        }, function (error) {
+        }, function(error) {
             d.reject(error)
-            // alert("Error. while created user Try Again!" + success);
+                // alert("Error. while created user Try Again!" + success);
         });
 
         return d.promise;
@@ -66,7 +66,7 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
     //get detials of logged in master details
 
-    factory.checkUserType = function (loggedUserId) {
+    factory.checkUserType = function(loggedUserId) {
         var d = $q.defer();
         $http({
 
@@ -76,12 +76,12 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (success) {
+        }).then(function(success) {
             factory.loggedInMaster = success.data;
             d.resolve(success)
-        }, function (error) {
+        }, function(error) {
             d.reject(error)
-            // alert("Error. while created user Try Again!" + success);
+                // alert("Error. while created user Try Again!" + success);
         });
 
         return d.promise;
@@ -90,7 +90,7 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
     //get all exiting teams
 
-    factory.getTeamDetails = function () {
+    factory.getTeamDetails = function() {
         var d = $q.defer();
         $http({
 
@@ -99,15 +99,15 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (success) {
+        }).then(function(success) {
             // factory.teamList = success.data.documents;
             d.resolve(success)
-            // alert(success)
+                // alert(success)
 
             //alert("User has created Successfully" + success)
-        }, function (error) {
+        }, function(error) {
             d.reject(error)
-            // alert("Error. while created user Try Again!" + success);
+                // alert("Error. while created user Try Again!" + success);
         });
 
         return d.promise;
@@ -120,13 +120,12 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
     // pin updation
 
-    factory.updatePin = function (pin,team) {
-        var obj = 
-        {
+    factory.updatePin = function(pin, team) {
+        var obj = {
             "pin": pin
         }
         var d = $q.defer();
-        console.log(obj+" "+team)
+        console.log(obj + " " + team)
         $http({
             method: 'PUT',
             url: 'http://10.182.234.181:1337/teams/' + team.id,
@@ -134,9 +133,9 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (success) {
+        }).then(function(success) {
             d.resolve(success)
-        }, function (error) {
+        }, function(error) {
             d.reject(error)
         });
 
@@ -147,10 +146,10 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
 
 
 
-    
+
     // // get scrumpoints of logged in user's teams
 
-    factory.getScrumPoints = function (obj) {
+    factory.getScrumPoints = function(obj) {
         var d = $q.defer();
         $http({
 
@@ -161,15 +160,40 @@ angular.module('starter').factory("DashboardFactory", function ($q, $http) {
             headers: {
                 'Content-Type': 'application/json'
             }
-        }).then(function (success) {
+        }).then(function(success) {
             factory.loggedInUserTeam = success.data;
             d.resolve(success)
-            // alert(success)
+                // alert(success)
 
             //alert("User has created Successfully" + success)
-        }, function (error) {
+        }, function(error) {
             d.reject(error)
-            // alert("Error. while created user Try Again!" + success);
+                // alert("Error. while created user Try Again!" + success);
+        });
+
+        return d.promise;
+    };
+
+    factory.getScrumPointsByMonth = function(obj, month) {
+        var d = $q.defer();
+        $http({
+
+            method: 'GET',
+
+            url: 'http://10.182.234.181:1337/scrumpoints?associate=' + obj,
+            data: obj,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(success) {
+            factory.loggedInUserTeam = success.data;
+            d.resolve(success)
+                // alert(success)
+
+            //alert("User has created Successfully" + success)
+        }, function(error) {
+            d.reject(error)
+                // alert("Error. while created user Try Again!" + success);
         });
 
         return d.promise;
