@@ -22,10 +22,7 @@ angular.module('starter').factory("DashboardFactory", function($q, $http) {
             }
         }).then(function(success) {
             factory.loggedInUser = success.data;
-            d.resolve(success)
-                // alert(success)
-
-            //alert("User has created Successfully" + success)
+            d.resolve(success);
         }, function(error) {
             d.reject(error)
                 // alert("Error. while created user Try Again!" + success);
@@ -176,21 +173,25 @@ angular.module('starter').factory("DashboardFactory", function($q, $http) {
 
     factory.getScrumPointsByMonth = function(obj, month) {
         var d = $q.defer();
+        if (month === moment().format('YYYY-MM')) {
+            var url = 'http://10.182.234.181:1337/scrumpoints?associate=' + obj + '&created_at_gte=' + month + '-01&created_at_lte=' + month + '-' + moment().format('DD')
+        } else {
+            var url = 'http://10.182.234.181:1337/scrumpoints?associate=' + obj + '&created_at_gte=' + month + '-01&created_at_lte=' + month + '-31';
+        }
         $http({
 
             method: 'GET',
 
-            url: 'http://10.182.234.181:1337/scrumpoints?associate=' + obj,
-            data: obj,
+            url: url,
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(function(success) {
-            factory.loggedInUserTeam = success.data;
-            d.resolve(success)
-                // alert(success)
-
-            //alert("User has created Successfully" + success)
+            var memberPoints = 0;
+            for (var i = 0; i < success.data.length; i++) {
+                memberPoints += parseInt(success.data[i].point);
+            }
+            d.resolve(memberPoints);
         }, function(error) {
             d.reject(error)
                 // alert("Error. while created user Try Again!" + success);

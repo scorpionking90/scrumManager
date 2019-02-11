@@ -237,44 +237,58 @@ angular
                 type: 'bar',
                 data: {
                     datasets: [{
-                        data: $scope.scrumPoints,
-                        backgroundColor: $scope.getRandomColor(),
-                        // borderColor: $scope.backgroundColors,
-                        borderWidth: 1,
-                        label: 'Scrum Points',
+                        data: [4, 5.8, 6],
+                        backgroundColor: $scope.backgroundColors,
+                        // labels: ['October', 'November', 'December']
                     }],
 
                     // These labels appear in the legend and in the tooltips when hovering different arcs
                     labels: ['October', 'November', 'December']
 
-                }
+                },
                 // options: options
+                options: {
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                    }
+                }
             });
 
         }, 1000);
 
-        $scope.getScrumPointsByIdForMonth = function(userId, month) {
-            DashboardFactory.getScrumPointsByMonth(userId, month).then(
+        $scope.getScrumPointsForMonth = function(month) {
+            DashboardFactory.getLoggedInUserDetails(loggedUserId).then(
                 function(success) {
-                    $scope.member = success.data;
-                    var memberPoints = 0;
-                    for (var eachPoint = 0; eachPoint < success.data.length; eachPoint++) {
-                        var today = success.data[eachPoint].created_at;
-                        if (moment().format("MM") === moment(today).format("MM"))
-                            memberPoints += parseInt(success.data[eachPoint].point);
-                    }
-                    eachAssociate.points = memberPoints;
-                    $scope.associates.push(eachAssociate);
+                    DashboardFactory.getScrumPointsByMonth(success.data[0].id, month).then(
+                        function(success) {
+                            console.log(success);
+                        },
+                        function(error) {
+                            console.log(error);
+                        }
+                    );
                 },
                 function(error) {
                     console.log(error);
                 }
-            );
+            )
+
         }
 
         $scope.getLoggedInUserPointsForGraph = function() {
-            var dateFrom = moment().subtract(1, 'months').endOf('month').format('YYYY-MM');
-            console.log(dateFrom);
+            $scope.userGraphData = {
+                labels: [],
+            }
+            var thisMonth = moment().format('YYYY-MM');
+            $scope.getScrumPointsForMonth(thisMonth);
+            var previousMonth = moment().subtract(1, 'months').format('YYYY-MM');
+            $scope.getScrumPointsForMonth(previousMonth);
+            var prevous2Month = moment().subtract(2, 'months').format('YYYY-MM');
+            $scope.getScrumPointsForMonth(prevous2Month);
         };
 
         $scope.getRandomColor = function() {

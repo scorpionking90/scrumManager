@@ -6,52 +6,58 @@
     <ion-content class="has-header has-tabs-bottom">
         <ion-tabs class="tabs-positive tabs-icon-top">
             <ion-tab class="dash" title="Dashboard" icon-on="ion-bookmark" icon-off="ion-bookmark">
-                <div class="card graphCard">
-                    <div class="item item-divider">
-                        {{teamName}}'s Chart
+                <ion-content>
+                    <div class="card graphCard">
+                        <div class="item item-divider">
+                            {{teamName}}'s Chart
+                        </div>
+                        <div class="item item-text-wrap">
+                            <canvas id="teamChart" width="400" height="400"></canvas>
+                        </div>
                     </div>
-                    <div class="item item-text-wrap">
-                        <canvas id="teamChart" width="400" height="400"></canvas>
-                    </div>
-                </div>
 
-                <div class="card graphCard">
-                    <div class="item item-divider">
-                        {{teamName}}'s Chart
+                    <div class="card graphCard">
+                        <div class="item item-divider">
+                            {{teamName}}'s Chart
+                        </div>
+                        <div class="item item-text-wrap">
+                            <canvas id="myChart1" width="400" height="400"></canvas>
+                        </div>
                     </div>
-                    <div class="item item-text-wrap">
-                        <canvas id="myChart1" width="400" height="400"></canvas>
-                    </div>
-                </div>
+                </ion-content>
             </ion-tab>
 
             <ion-tab title="Scrum Points" class="points" icon-on="ion-clock" icon-off="ion-clock">
-                <div class="list">
-                    <div ng-repeat="user in teamAssociateDetails.associates">
+                <ion-content>
+                    <div class="list">
+                        <div ng-repeat="user in teamAssociateDetails.associates">
 
-                        <div class="item" ng-if="!isMaster">
-                            {{user.name}}
-                            <span class="item-note">
+                            <div class="item" ng-if="!isMaster">
+                                {{user.name}}
+                                <span class="item-note">
                               {{user.points}}
                             </span>
-                        </div>
+                            </div>
 
-                        <div class="item item-divider" ng-if="isMaster">
-                            {{user.name}}
-                        </div>
+                            <div class="item item-divider" ng-if="isMaster">
+                                {{user.name}}
+                            </div>
 
-                        <div class="item" ng-repeat="associate in user.associates">
-                            {{associate.name}}
-                        </div>
+                            <div class="item" ng-repeat="associate in user.associates">
+                                {{associate.name}}
+                            </div>
 
+                        </div>
                     </div>
-                </div>
+                </ion-content>
             </ion-tab>
 
             <button class="add_button icon ion-android-add-circle" ng-click="enterPinPopup()" ng-disabled=""></button>
             <ion-tab class="rewards" title="Agile Reward" icon-on="ion-bookmark" icon-off="ion-bookmark">
             </ion-tab>
+            <ion-content>
 
+            </ion-content>
             <ion-tab class="history" title="History" icon-on="ion-bookmark" icon-off="ion-bookmark">
             </ion-tab>
         </ion-tabs>
