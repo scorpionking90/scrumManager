@@ -84,7 +84,6 @@ angular
         $locationProvider
     ) {
         $ionicConfigProvider.tabs.position("top");
-        // $ionicConfigProvider.platform.android.tabs.position("bottom");
         $ionicConfigProvider.views.swipeBackEnabled(false);
         // $locationProvider.html5Mode({
         //     enabled: true,

@@ -21,13 +21,16 @@ angular
             DashboardFactory.getLoggedInUserDetails(loggedUserId).then(
                 function(success) {
                     //get all assocaites based on logged in user team
-
-                    $scope.teamName = success.data[0].team.name;
-                    var teamId = success.data[0].team.id;
+                    console.log(success.data);
+                    $scope.loggedUserDetails = success.data[0];
                     $scope.associates = [];
 
+                    //Generate Dashboard graphs
+                    $scope.getLoggedInUserPointsForGraph();
+                    //Get History
+                    $scope.getHistory();
 
-                    DashboardFactory.getAssociateDetails(teamId).then(
+                    DashboardFactory.getAssociateDetails($scope.loggedUserDetails.team.id).then(
                         function(success) {
                             success.data.forEach(function(element) {
                                 var eachAssociate = {
@@ -105,7 +108,6 @@ angular
                         $scope.isMaster = true;
                         $scope.getTeam();
                     }
-                    console.log($scope.isMaster);
                 },
                 function(error) {
                     console.log(error);
@@ -130,8 +132,6 @@ angular
         $scope.selectTeam = function() {
             $scope.data = {};
             $scope.getTeam();
-
-            console.log($scope.teamAssociateDetails);
 
             // Custom popup
             myPopup = $ionicPopup.show({
@@ -254,6 +254,86 @@ angular
             });
             var ctx = document.getElementById("teamChart");
             var ctx1 = document.getElementById("myChart1");
+            var ctx2 = document.getElementById("myChart2");
+
+
+            var rewardData = {
+                labels: ["Kiran", "Shreyas", "Rajesh", "Basavaraju"],
+                datasets: [{
+                        label: "Satisfy the Client",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [1, 0, 0, 0],
+                        stack: 1
+                    },
+                    {
+                        label: "Welcome Changing Requirements",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                    {
+                        label: "Delivery Software Frequently",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                    {
+                        label: "Daily Interaction",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                    {
+                        label: "Motivate and Trust",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [0, 1, 1, 0],
+                        stack: 1
+                    },
+                    {
+                        label: "Face to Face",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                    {
+                        label: "Working Software",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [0, 0, 0, 1],
+                        stack: 1
+                    },
+                    {
+                        label: "Sustainable Pace",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                    {
+                        label: "Technical Excellence",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [1, 0, 0, 1],
+                        stack: 1
+                    },
+                    {
+                        label: "Simplicity",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [0, 0, 0, 1],
+                        stack: 1
+                    },
+                    {
+                        label: "Self Organizing Emergent Solutions",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                    {
+                        label: "Retrospectives",
+                        backgroundColor: $scope.getRandomColor(),
+                        data: [],
+                        stack: 1
+                    },
+                ]
+            };
+
 
             new Chart(ctx, {
                 type: "pie",
@@ -295,31 +375,28 @@ angular
                 }
             });
 
+            new Chart(ctx2, {
+                type: 'bar',
+                data: rewardData
+            });
+
         }, 1000);
 
         $scope.getScrumPointsForMonth = function(month) {
-            DashboardFactory.getLoggedInUserDetails(loggedUserId).then(
+            DashboardFactory.getScrumPointsByMonth($scope.loggedUserDetails.id, month).then(
                 function(success) {
-                    DashboardFactory.getScrumPointsByMonth(success.data[0].id, month).then(
-                        function(success) {
-                            var memberPoints = 0;
-                            for (var i = 0; i < success.data.length; i++) {
-                                memberPoints += parseInt(success.data[i].point);
-                            }
-                            $scope.userGraphData.labels.push(moment(month).format('MMMM'));
-                            $scope.userGraphData.data.push(memberPoints);
-                            $scope.userGraphData.colors.push($scope.getRandomColor());
-                        },
-                        function(error) {
-                            console.log(error);
-                        }
-                    );
+                    var memberPoints = 0;
+                    for (var i = 0; i < success.data.length; i++) {
+                        memberPoints += parseInt(success.data[i].point);
+                    }
+                    $scope.userGraphData.labels.push(moment(month).format('MMMM'));
+                    $scope.userGraphData.data.push(memberPoints);
+                    $scope.userGraphData.colors.push($scope.getRandomColor());
                 },
                 function(error) {
                     console.log(error);
                 }
-            )
-
+            );
         }
 
         $scope.getLoggedInUserPointsForGraph = function() {
@@ -374,7 +451,6 @@ angular
         $scope.checkAvailability = function(reward) {
             var val = false
             $scope.allAssociate.allRewards.forEach(function(element) {
-                console.log(element);
                 if (element === reward.principleId) {
                     val = true;
                 }
@@ -393,22 +469,12 @@ angular
             // console.log($scope.id);
             // An elaborate, custom popup
             $ionicPopup.show({
-                template: '<div class="list"> <div class="item" ng-repeat="rewards in agilerewards"> <div ng-click="assignRewards(rewards.id,id,toAssociate.id)" ng-class="{disabled: checkAvailability(rewards)}">{{rewards.principleId}}<span class="item-note">{{rewards.agile_rewards}}</span></div></div></div>',
+                template: '<div class="list"> <div class="item" ng-repeat="rewards in agilerewards"> <div ng-click="assignRewards(rewards.id,loggedUserDetails.id,toAssociate.id)" ng-class="{disabled: checkAvailability(rewards)}">{{rewards.principleId}}<span class="item-note">{{rewards.agile_rewards}}</span></div></div></div>',
                 title: "Select Agile Rewards",
                 scope: $scope,
 
                 buttons: [{ text: "Cancel", type: "button-positive" }]
             });
-        };
-        $scope.getLoggedInUserData = function() {
-            DashboardFactory.getLoggedInUserDetails(loggedUserId).then(
-                function(success) {
-                    $scope.id = success.data[0].id;
-                },
-                function(error) {
-                    console.log(error);
-                }
-            );
         };
         $scope.assignRewards = function(agileprinciple, fromAssociate, toAssociate) {
             // console.log(agileprinciple+" "+fromAssociate+" "+toAssociate)
@@ -431,27 +497,18 @@ angular
         // Tab 4: History
         $scope.showHistoryFilterIcon = false;
         $scope.getHistory = function() {
-            DashboardFactory.getLoggedInUserDetails(loggedUserId).then(
+            DashboardFactory.getScrumPointsByMonth($scope.loggedUserDetails.id, moment().format('YYYY-MM')).then(
                 function(success) {
-
-                    DashboardFactory.getScrumPointsByMonth(success.data[0].id, moment().format('YYYY-MM')).then(
-                        function(success) {
-                            $scope.loggedInUserHistory = success.data;
-                            console.log($scope.loggedInUserHistory);
-                        },
-                        function(error) {
-                            console.log(error);
-                        }
-                    );
+                    $scope.loggedInUserHistory = success.data;
                 },
                 function(error) {
                     console.log(error);
                 }
-            )
+            );
         }
 
+
         $scope.showHistoryFilter = function() {
-            console.log('called');
             $scope.showHistoryFilterIcon = true;
         }
 
@@ -475,7 +532,6 @@ angular
                     DashboardFactory.getScrumPointsByMonth(success.data[0].id, item).then(
                         function(success) {
                             $scope.loggedInUserHistory = success.data;
-                            console.log($scope.loggedInUserHistory);
                             $scope.closePopover();
                         },
                         function(error) {
@@ -489,8 +545,6 @@ angular
             )
         }
 
-        $scope.getHistory();
-        $scope.getLoggedInUserData();
-        $scope.getLoggedInUserPointsForGraph();
+
         $scope.checkUserType();
     });

@@ -9,7 +9,7 @@
                 <ion-content class="has-tabs-top">
                     <div class="card graphCard">
                         <div class="item item-divider">
-                            {{teamName}}'s Chart
+                            {{loggedUserDetails.team.name}}'s Chart
                         </div>
                         <div class="item item-text-wrap">
                             <canvas id="teamChart" width="400" height="400"></canvas>
@@ -18,10 +18,19 @@
 
                     <div class="card graphCard">
                         <div class="item item-divider">
-                            {{teamName}}'s Chart
+                            {{loggedUserDetails.name}}'s Chart
                         </div>
                         <div class="item item-text-wrap">
                             <canvas id="myChart1" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card graphCard">
+                        <div class="item item-divider">
+                            {{teamName}}'s Chart
+                        </div>
+                        <div class="item item-text-wrap">
+                            <canvas id="myChart2" width="400" height="400"></canvas>
                         </div>
                     </div>
                 </ion-content>
@@ -30,7 +39,7 @@
             <ion-tab title="Scrum Points" class="points" icon-on="ion-clock" icon-off="ion-clock">
                 <ion-content class="has-header">
                     <div class="list">
-                        <div ng-repeat="user in teamAssociateDetails.associates">
+                        <div ng-repeat="user in teamAssociateDetails.associates|orderBy: 'user.name':true">
 
                             <div class="item" ng-if="!isMaster">
                                 {{user.name}}
@@ -54,7 +63,7 @@
             <ion-tab class="rewards" title="Agile Reward" icon-on="ion-bookmark" icon-off="ion-bookmark">
                 <ion-content class="has-header">
                     <div class="list">
-                        <div ng-repeat="user in teamAssociateDetails.associates">
+                        <div ng-repeat="user in teamAssociateDetails.associates|orderBy: 'user.name':true">
                             <div class="item" ng-if="!isMaster" ng-click="selectRewards(user)">
                                 {{user.name}}
                                 <span class="badge badge-assertive item-note" style="margin-left: 20px" ng-repeat="associate in user.rewards">
