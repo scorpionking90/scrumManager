@@ -80,12 +80,16 @@ angular
         $stateProvider,
         $urlRouterProvider,
         $httpProvider,
-        $ionicConfigProvider
+        $ionicConfigProvider,
+        $locationProvider
     ) {
-        $ionicConfigProvider.tabs.position("bottom");
+        $ionicConfigProvider.tabs.position("top");
         // $ionicConfigProvider.platform.android.tabs.position("bottom");
         $ionicConfigProvider.views.swipeBackEnabled(false);
-
+        // $locationProvider.html5Mode({
+        //     enabled: true,
+        //     requireBase: false
+        // });
         $httpProvider.interceptors.push(function($rootScope) {
             return {
                 request: function(config) {
@@ -113,7 +117,18 @@ angular
                 cache: false,
                 templateUrl: "app/dashboard/Dashboard.html",
                 controller: "DashboardController"
+            })
+            .state("login", {
+                url: "/login",
+                cache: false,
+                templateUrl: "app/login/Login.html",
+                controller: "LoginController"
+            }).state("home", {
+                url: "/home",
+                cache: false,
+                templateUrl: "app/home/Home.html",
+                controller: "HomeController"
             });
 
-        $urlRouterProvider.otherwise("/");
+        $urlRouterProvider.otherwise("/login");
     });

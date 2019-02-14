@@ -1,12 +1,12 @@
 <ion-view title="Home" class="home-view">
     <div class="bar bar-header bar-positive">
+        <i class="icon icon ion-funnel historyFilter" ng-show="showHistoryFilterIcon == true" ng-click="popover.show($event)"></i>
         <h1 class="title">Scrum Manager</h1>
-        <button class="button button-balanced" id="generateNumber" ng-click="selectTeam()" ng-show="isMaster === true">+</button>
     </div>
-    <ion-content class="has-header has-tabs-bottom">
+    <ion-content class="has-footer">
         <ion-tabs class="tabs-positive tabs-icon-top">
             <ion-tab class="dash" title="Dashboard" icon-on="ion-bookmark" icon-off="ion-bookmark">
-                <ion-content>
+                <ion-content class="has-tabs-top">
                     <div class="card graphCard">
                         <div class="item item-divider">
                             {{teamName}}'s Chart
@@ -28,7 +28,7 @@
             </ion-tab>
 
             <ion-tab title="Scrum Points" class="points" icon-on="ion-clock" icon-off="ion-clock">
-                <ion-content>
+                <ion-content class="has-header">
                     <div class="list">
                         <div ng-repeat="user in teamAssociateDetails.associates">
 
@@ -51,15 +51,52 @@
                     </div>
                 </ion-content>
             </ion-tab>
-
-            <button class="add_button icon ion-android-add-circle" ng-click="enterPinPopup()" ng-disabled=""></button>
             <ion-tab class="rewards" title="Agile Reward" icon-on="ion-bookmark" icon-off="ion-bookmark">
+                <ion-content class="has-header">
+                    <div class="list">
+                        <div ng-repeat="user in teamAssociateDetails.associates">
+                            <div class="item" ng-if="!isMaster" ng-click="selectRewards(user)">
+                                {{user.name}}
+                                <span class="badge badge-assertive item-note" style="margin-left: 20px" ng-repeat="associate in user.rewards">
+                            {{associate}}
+                            </span>
+                            </div>
+                        </div>
+                    </div>
+                </ion-content>
             </ion-tab>
-            <ion-content>
 
-            </ion-content>
-            <ion-tab class="history" title="History" icon-on="ion-bookmark" icon-off="ion-bookmark">
+            <ion-tab class="history" title="History" icon-on="ion-bookmark" icon-off="ion-bookmark" on-select="showHistoryFilter()" on-deselect="hideHistoryFilter()">
+                <ion-content class="has-header">
+
+                    <div class="item item-divider">
+                        Date ('DD-MM-YYYY')
+                        <span class="item-note ">Points</span>
+                    </div>
+                    <div ng-repeat="eachHistory in loggedInUserHistory|orderBy: 'eachHistory.created_at':true">
+                        <div class=" item ">
+                            {{eachHistory.created_at | date : "dd-MM-yyyy"}}
+                            <span class="item-note ">{{eachHistory.point}}</span>
+                        </div>
+
+                    </div>
+                </ion-content>
             </ion-tab>
         </ion-tabs>
     </ion-content>
+    <div class="bar bar-footer bar-positive">
+        <button class="button button-balanced" id="generatePin" ng-click="selectTeam()" ng-show="isMaster === true">Pin</button>
+        <div class="title">{{randomNumber}}</div>
+    </div>
 </ion-view>
+
+<script id="templates/popover.html" type="text/ng-template">
+    <ion-popover-view class="filterPopover">
+        <div ng-repeat="eachItem in historyFilter">
+            <ion-list>
+                <ion-radio ng-model="choice" ng-value="{{eachItem}}" ng-click="filterHistory(eachItem)">{{eachItem}}</ion-radio>
+            </ion-list>
+
+        </div>
+    </ion-popover-view>
+</script>

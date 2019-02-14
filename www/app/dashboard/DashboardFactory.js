@@ -111,6 +111,30 @@ angular.module('starter').factory("DashboardFactory", function($q, $http) {
     };
 
 
+    factory.getTeamDetailsByTeamName = function() {
+        var d = $q.defer();
+        $http({
+
+            method: 'GET',
+            url: 'http://10.182.234.181:1337/teams/',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(success) {
+            // factory.teamList = success.data.documents;
+            d.resolve(success)
+                // alert(success)
+
+            //alert("User has created Successfully" + success)
+        }, function(error) {
+            d.reject(error)
+                // alert("Error. while created user Try Again!" + success);
+        });
+
+        return d.promise;
+    };
+
+
 
 
 
@@ -174,7 +198,7 @@ angular.module('starter').factory("DashboardFactory", function($q, $http) {
     factory.getScrumPointsByMonth = function(obj, month) {
         var d = $q.defer();
         if (month === moment().format('YYYY-MM')) {
-            var url = 'http://10.182.234.181:1337/scrumpoints?associate=' + obj + '&created_at_gte=' + month + '-01&created_at_lte=' + month + '-' + moment().format('DD')
+            var url = 'http://10.182.234.181:1337/scrumpoints?associate=' + obj + '&created_at_gte=' + month + '-01';
         } else {
             var url = 'http://10.182.234.181:1337/scrumpoints?associate=' + obj + '&created_at_gte=' + month + '-01&created_at_lte=' + month + '-31';
         }
@@ -187,14 +211,77 @@ angular.module('starter').factory("DashboardFactory", function($q, $http) {
                 'Content-Type': 'application/json'
             }
         }).then(function(success) {
-            var memberPoints = 0;
-            for (var i = 0; i < success.data.length; i++) {
-                memberPoints += parseInt(success.data[i].point);
-            }
-            d.resolve(memberPoints);
+            d.resolve(success);
         }, function(error) {
             d.reject(error)
                 // alert("Error. while created user Try Again!" + success);
+        });
+
+        return d.promise;
+    };
+
+
+
+    factory.getAgileRewards = function(obj) {
+        var d = $q.defer();
+        $http({
+
+            method: 'GET',
+
+            url: 'http://10.182.234.181:1337/rewards?toAssociate=' + obj,
+            data: obj,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(success) {
+            d.resolve(success)
+        }, function(error) {
+            d.reject(error)
+        });
+
+        return d.promise;
+    };
+
+    // // get all avilable agile principles
+
+    factory.getAgilePriciples = function() {
+        var d = $q.defer();
+        $http({
+
+            method: 'GET',
+
+            url: 'http://10.182.234.181:1337/agileprinciples',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(success) {
+            d.resolve(success)
+        }, function(error) {
+            d.reject(error)
+        });
+
+        return d.promise;
+    };
+
+    factory.assignRewards = function(agileprinciple, fromAssociate, toAssociate) {
+        var obj = {
+            "agileprinciple": agileprinciple,
+            "toAssociate": toAssociate,
+            "fromAssociate": fromAssociate
+        }
+        var d = $q.defer();
+        console.log(agileprinciple + " " + fromAssociate + " " + toAssociate)
+        $http({
+            method: 'POST',
+            url: 'http://10.182.234.181:1337/rewards/',
+            data: obj,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(success) {
+            d.resolve(success)
+        }, function(error) {
+            d.reject(error)
         });
 
         return d.promise;
