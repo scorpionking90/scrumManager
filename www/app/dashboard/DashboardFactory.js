@@ -286,5 +286,94 @@ angular.module('starter').factory("DashboardFactory", function($q, $http) {
 
         return d.promise;
     };
+
+    factory.updatePoints = function(scrumPoints, id) {
+        var obj = {
+            "point": scrumPoints,
+            "associate": {
+                "id": id
+            }
+        }
+        var d = $q.defer();
+        $http({
+            method: 'POST',
+            url: 'http://10.182.234.181:1337/scrumpoints/',
+            data: obj,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function(success) {
+            d.resolve(success)
+        }, function(error) {
+            d.reject(error)
+        });
+
+        return d.promise;
+    };
+
+    factory.getLoggedUserPeopleDetails = function(obj) {
+        var d = $q.defer();
+        $http({
+
+            method: 'GET',
+            url: 'https://graph.microsoft.com/v1.0/me/people?$top=30',
+            headers: {
+                'Authorization': 'Bearer ' + obj
+            }
+        }).then(function(success) {
+            console.log(success);
+            d.resolve(success);
+        }, function(error) {
+            console.log(error)
+            d.reject(error)
+                // alert("Error. while created user Try Again!" + success);
+        });
+
+        return d.promise;
+    };
+
+    factory.getSearchPeopleDetails = function(accessToken, obj) {
+        var d = $q.defer();
+        $http({
+
+            method: 'GET',
+            url: 'https://graph.microsoft.com/v1.0/users?$filter=startswith(userPrincipalName,\'' + obj + '\')',
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        }).then(function(success) {
+            // console.log(success);
+            d.resolve(success);
+        }, function(error) {
+            console.log(error)
+            d.reject(error)
+                // alert("Error. while created user Try Again!" + success);
+        });
+
+        return d.promise;
+    };
+
+    factory.addAssociateToTeam = function(name, id, teamId) {
+        var d = $q.defer();
+        var obj = {
+            "name": name,
+            "associate_id": id,
+            "team": teamId
+        }
+        $http({
+            data: obj,
+            method: 'POST',
+            url: 'http://10.182.234.181:1337/associates',
+
+        }).then(function(success) {
+            d.resolve(success);
+        }, function(error) {
+            console.log(error)
+            d.reject(error)
+                // alert("Error. while created user Try Again!" + success);
+        });
+
+        return d.promise;
+    };
     return factory;
 });

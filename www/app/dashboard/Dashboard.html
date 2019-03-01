@@ -1,7 +1,9 @@
 <ion-view title="Home" class="home-view">
     <div class="bar bar-header bar-positive">
         <i class="icon icon ion-funnel historyFilter" ng-show="showHistoryFilterIcon == true" ng-click="popover.show($event)"></i>
+        <i class="icon icon " ng-show="showHistoryFilterIcon == true"></i>
         <h1 class="title">Scrum Manager</h1>
+        <button class="button icon ion-plus-round" ng-show="isMaster === true" ng-click="selectTeamForAddUsers()" style="border: 0;"></button>
     </div>
     <ion-content class="has-footer">
         <ion-tabs class="tabs-positive tabs-icon-top">
@@ -12,6 +14,18 @@
                             {{loggedUserDetails.team.name}}'s Chart
                         </div>
                         <div class="item item-text-wrap">
+                            <div class="item-note" style="padding-bottom: 42px;">
+
+                                <div class="item item-input item-select" style="padding: unset;width: max-content;float: right;background: none !important;">
+                                    <div class="input-label" style="padding: unset;">
+                                        Select Team
+                                    </div>
+                                    <select style="position: inherit;background: none;" name="teams" id="teams" ng-model="masterSelectedTeam" ng-init="masterSelectedTeam = teamAssociateDetails.associates[0].id" ng-options="team.name for team in teamAssociateDetails.associates | orderBy:'team.id':true"
+                                        ng-change="masterSelectTeamGraph(masterSelectedTeam)">          
+                                    </select>
+                                </div>
+
+                            </div>
                             <canvas id="teamChart" width="400" height="400"></canvas>
                         </div>
                     </div>
@@ -67,8 +81,10 @@
                             <div class="item" ng-if="!isMaster" ng-click="selectRewards(user)">
                                 {{user.name}}
                                 <span class="badge badge-assertive item-note" style="margin-left: 20px" ng-repeat="associate in user.rewards">
-                            {{associate}}
-                            </span>
+                                    {{associate}}
+                                </span>
+                                <ion-icon class="arrow-dropdown" name="arrow-dropdown" ng-if="!isMaster" ng-click="selectRewards(user)"></ion-icon>
+                                </ion-icon>
                             </div>
                         </div>
                     </div>
@@ -95,6 +111,7 @@
     </ion-content>
     <div class="bar bar-footer bar-positive">
         <button class="button button-balanced" id="generatePin" ng-click="selectTeam()" ng-show="isMaster === true">Pin</button>
+        <button class="button button-balanced" ng-click="enterPinPopup()" ng-show="isMaster === false">Enter Pin</button>
         <div class="title">{{randomNumber}}</div>
     </div>
 </ion-view>

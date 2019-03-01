@@ -16,6 +16,8 @@ angular
             allRewards: [],
         }
 
+        $scope.searchData = {}
+
         //get logged in user details
         $scope.getLoggedInUserDetails = function() {
             DashboardFactory.getLoggedInUserDetails(loggedUserId).then(
@@ -120,6 +122,7 @@ angular
             DashboardFactory.getTeamDetails().then(
                 function(success) {
                     $scope.teamAssociateDetails.associates = success.data;
+                    console.log($scope.teamAssociateDetails.associates);
                 },
                 function(error) {
                     console.log(error);
@@ -135,7 +138,24 @@ angular
 
             // Custom popup
             myPopup = $ionicPopup.show({
-                template: '<div class="list"><div class="item"  ng-repeat="team in teamAssociateDetails.associates" ng-click="generateNumber(team)">{{team.name}} <span class="item-note">{{team.pin}}</span></div></div>',
+                //<button class="button button-balanced" id="generateNumber" ng-click="verifyPinGeneration(team)"> + </button>
+                template: '<div class="list"><div class="item" ng-click="verifyPinGeneration(team)" ng-repeat="team in teamAssociateDetails.associates" ">{{team.name}} <span class="item-note">{{team.pin}}</span> </div></div>',
+                title: "Generate Pin",
+                scope: $scope,
+
+                buttons: [{ text: "Cancel", type: "button-positive" }]
+            });
+        }
+
+        var selectTeamForAddUsersPopup = null;
+        $scope.selectTeamForAddUsers = function() {
+            $scope.data = {};
+            $scope.getTeam();
+
+            // Custom popup
+            selectTeamForAddUsersPopup = $ionicPopup.show({
+                //<button class="button button-balanced" id="generateNumber" ng-click="verifyPinGeneration(team)"> + </button>
+                template: '<div class="list"><div class="item" ng-click="addUsersToTeam(team)" ng-repeat="team in teamAssociateDetails.associates" ">{{team.name}}</div></div>',
                 title: "Select Team",
                 scope: $scope,
 
@@ -143,16 +163,80 @@ angular
             });
         }
 
+
+        $scope.addUsersToTeam = function(team) {
+            DashboardFactory.getLoggedUserPeopleDetails($stateParams.accessToken).then(
+                function(success) {
+                    $scope.selectedTeamtoAdd = team;
+                    $scope.searchPeopleDetails = success.data.value;
+                    console.log($scope.searchPeopleDetails);
+                    var addUsersPopup = null;
+                    addUsersPopup = $ionicPopup.show({
+                        //<button class="button button-balanced" id="generateNumber" ng-click="verifyPinGeneration(team)"> + </button>
+                        template: '<label class="item-input-wrapper textbox-search"><i class="icon ion-ios7-search placeholder-icon"></i><input type="search" placeholder="Search" ng-model="searchData.value" ng-keyup="searchPeople()" style = "background-color: #eeeeee;"></label><div class="list"><div class="item" ng-click="addAssociateToTeam(eachPeople)" ng-repeat="eachPeople in searchPeopleDetails" ">{{eachPeople.displayName}}</div></div>',
+                        title: "Search Member",
+                        scope: $scope,
+                        buttons: [{ text: "Cancel", type: "button-positive" }]
+                    });
+                },
+                function(error) {
+                    ionicToast.show(error, "bottom", false, 3500);
+                }
+            );
+        }
+
+        $scope.searchPeople = function() {
+            if ($scope.searchData.value != null) {
+                if ($scope.searchData.value.length > 2) {
+                    console.log($scope.searchText);
+                    DashboardFactory.getSearchPeopleDetails($stateParams.accessToken, $scope.searchData.value).then(
+                        function(success) {
+                            $scope.searchPeopleDetails = success.data.value;
+                        },
+                        function(error) {
+                            ionicToast.show(error, "bottom", false, 3500);
+                        }
+                    );
+                }
+            }
+        }
+
+        $scope.addAssociateToTeam = function(user) {
+            $scope.selectedTeamtoAdd;
+            console.log(user);
+            console.log($scope.selectedTeamtoAdd);
+            DashboardFactory.addAssociateToTeam(user.displayName, user.userPrincipalName.split("@")[0], $scope.selectedTeamtoAdd.id).then(
+                function(success) {
+
+                },
+                function(error) {
+                    ionicToast.show(error, "bottom", false, 3500);
+                }
+            );
+        }
+
         //pin generation
+        $scope.verifyPinGeneration = function(team) {
+            $ionicPopup.show({
+                title: "ARE YOU SURE",
+                scope: $scope,
+                buttons: [
+                    { text: "NO" },
+                    {
+                        text: "<b>YES</b>",
+                        type: "button-positive",
+                        onTap: function(e) {
+                            $scope.generateNumber(team)
+                        }
+                    }
+                ]
+            });
+        };
+
         $scope.generateNumber = function(team) {
             if (team.pin != -1) {
                 $scope.updatePin("-1", team);
-                var element = document.getElementById("generateNumber");
-                angular.element(element).addClass("button-balanced");
-                angular.element(element).removeClass("button-assertive");
-
-                var ele = angular.element(document.querySelector("#generateNumber"));
-                ele.html("+");
+                $scope.getTeam();
                 $scope.randomNumber = null;
             } else {
                 $scope.randomNumber = Math.floor(
@@ -166,7 +250,9 @@ angular
         //update pin
         $scope.updatePin = function(randomNumber, team) {
             DashboardFactory.updatePin(randomNumber, team).then(
-                function(success) {},
+                function(success) {
+                    console.log(success.data)
+                },
                 function(error) {
                     ionicToast.show(error, "bottom", false, 3500);
                 }
@@ -181,21 +267,12 @@ angular
             $ionicPopup.show({
                 template: '<p class="pin">{{randomNumber}}</p>',
                 title: "Scrum PIN",
-                //   subTitle: 'Please use normal things',
                 scope: $scope,
                 buttons: [{
                     template: "",
                     text: "<b>OK </b>",
                     type: "button-positive",
-                    onTap: function(e) {
-                        var element = document.getElementById("generateNumber");
-                        angular.element(element).addClass("button-assertive");
-                        angular.element(element).removeClass("button-balanced");
-
-                        var ele = angular.element(
-                            document.querySelector("#generateNumber")
-                        );
-                        ele.html("-");
+                    onTap: function() {
                         myPopup.close();
                     }
                 }]
@@ -203,13 +280,12 @@ angular
         };
 
         $scope.enterPinPopup = function() {
-            $scope.data = {};
+            $scope.enteredPin = {};
 
             // An elaborate, custom popup
             var myPopup = $ionicPopup.show({
-                template: '<input type="password" ng-model="data.wifi">',
-                title: "Enter Wi-Fi Password",
-                subTitle: "Please use normal things",
+                template: '<input type="text" ng-model="enteredPin.pin">',
+                title: "Enter PIN",
                 scope: $scope,
                 buttons: [
                     { text: "Cancel" },
@@ -217,11 +293,28 @@ angular
                         text: "<b>Save</b>",
                         type: "button-positive",
                         onTap: function(e) {
-                            if (!$scope.data.wifi) {
-                                //don't allow the user to close unless he enters wifi password
-                                e.preventDefault();
+                            if (($scope.loggedUserDetails.team.pin) === ($scope.enteredPin.pin)) {
+                                var currentTime = moment().local();
+                                var minutesDiff = currentTime.diff(moment.utc($scope.loggedUserDetails.team.updated_at), 'minutes')
+                                var scrumPoints = 0;
+                                var id = $scope.loggedUserDetails.id;
+                                if (minutesDiff <= 1) {
+                                    scrumPoints = 2;
+                                } else if (minutesDiff <= 2) {
+                                    scrumPoints = 1;
+                                } else {
+                                    scrumPoints = -2;
+                                }
+                                DashboardFactory.updatePoints(scrumPoints, id).then(
+                                    function(success) {
+                                        console.log(success)
+                                    },
+                                    function(error) {
+                                        ionicToast.show(error, "bottom", false, 3500);
+                                    }
+                                );
                             } else {
-                                return $scope.data.wifi;
+                                console.log("YOUR'E WRONG");
                             }
                         }
                     }
@@ -231,10 +324,6 @@ angular
             myPopup.then(function(res) {
                 console.log("Tapped!", res);
             });
-
-            $timeout(function() {
-                myPopup.close(); //close the popup after 3 seconds for some reason
-            }, 3000);
         };
 
 
@@ -243,144 +332,165 @@ angular
 
         // Tab 1 : Dashboard
 
-        setTimeout(function() {
-            $scope.teamGraphAssociateName = [];
-            $scope.teamGraphAssociatePoints = [];
-            $scope.backgroundColors = [];
+        $scope.masterSelectTeamGraph = function(selectedTeam) {
             $scope.associates.forEach(element => {
                 $scope.teamGraphAssociateName.push(element.name);
                 $scope.teamGraphAssociatePoints.push(element.points);
                 $scope.backgroundColors.push($scope.getRandomColor());
             });
-            var ctx = document.getElementById("teamChart");
-            var ctx1 = document.getElementById("myChart1");
-            var ctx2 = document.getElementById("myChart2");
 
+            console.log(selectedTeam);
+        }
 
-            var rewardData = {
-                labels: ["Kiran", "Shreyas", "Rajesh", "Basavaraju"],
-                datasets: [{
-                        label: "Satisfy the Client",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [1, 0, 0, 0],
-                        stack: 1
-                    },
-                    {
-                        label: "Welcome Changing Requirements",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                    {
-                        label: "Delivery Software Frequently",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                    {
-                        label: "Daily Interaction",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                    {
-                        label: "Motivate and Trust",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [0, 1, 1, 0],
-                        stack: 1
-                    },
-                    {
-                        label: "Face to Face",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                    {
-                        label: "Working Software",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [0, 0, 0, 1],
-                        stack: 1
-                    },
-                    {
-                        label: "Sustainable Pace",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                    {
-                        label: "Technical Excellence",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [1, 0, 0, 1],
-                        stack: 1
-                    },
-                    {
-                        label: "Simplicity",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [0, 0, 0, 1],
-                        stack: 1
-                    },
-                    {
-                        label: "Self Organizing Emergent Solutions",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                    {
-                        label: "Retrospectives",
-                        backgroundColor: $scope.getRandomColor(),
-                        data: [],
-                        stack: 1
-                    },
-                ]
-            };
-
-
-            new Chart(ctx, {
-                type: "pie",
-                data: {
-                    labels: $scope.teamGraphAssociateName,
-                    datasets: [{
-                        data: $scope.teamGraphAssociatePoints,
-                        backgroundColor: $scope.backgroundColors,
-                        borderWidth: 1.5
-                    }]
+        $scope.loadDashBoard = function() {
+            setTimeout(function() {
+                $scope.teamGraphAssociateName = [];
+                $scope.teamGraphAssociatePoints = [];
+                $scope.backgroundColors = [];
+                $scope.selectedTeamIndex = 0;
+                if ($scope.isMaster) {
+                    console.log($scope.teamAssociateDetails.associates[0].id)
+                    $scope.masterSelectedTeam = $scope.teamAssociateDetails.associates[1].id;
+                    $scope.masterSelectTeamGraph(1);
+                } else {
+                    console.log($scope.associates);
+                    $scope.associates.forEach(element => {
+                        $scope.teamGraphAssociateName.push(element.name);
+                        $scope.teamGraphAssociatePoints.push(element.points);
+                        $scope.backgroundColors.push($scope.getRandomColor());
+                    });
                 }
-            });
+                console.log($scope.teamAssociateDetails.associates);
+                var ctx = document.getElementById("teamChart");
+                var ctx1 = document.getElementById("myChart1");
+                var ctx2 = document.getElementById("myChart2");
 
-            new Chart(ctx1, {
-                type: 'bar',
-                data: {
+
+                var rewardData = {
+                    labels: ["Kiran", "Shreyas", "Rajesh", "Basavaraju"],
                     datasets: [{
-                        data: $scope.userGraphData.data,
-                        backgroundColor: $scope.userGraphData.colors,
-                        // labels: ['October', 'November', 'December']
-                    }],
+                            label: "Satisfy the Client",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [1, 0, 0, 0],
+                            stack: 1
+                        },
+                        {
+                            label: "Welcome Changing Requirements",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                        {
+                            label: "Delivery Software Frequently",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                        {
+                            label: "Daily Interaction",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                        {
+                            label: "Motivate and Trust",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [0, 1, 1, 0],
+                            stack: 1
+                        },
+                        {
+                            label: "Face to Face",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                        {
+                            label: "Working Software",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [0, 0, 0, 1],
+                            stack: 1
+                        },
+                        {
+                            label: "Sustainable Pace",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                        {
+                            label: "Technical Excellence",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [1, 0, 0, 1],
+                            stack: 1
+                        },
+                        {
+                            label: "Simplicity",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [0, 0, 0, 1],
+                            stack: 1
+                        },
+                        {
+                            label: "Self Organizing Emergent Solutions",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                        {
+                            label: "Retrospectives",
+                            backgroundColor: $scope.getRandomColor(),
+                            data: [],
+                            stack: 1
+                        },
+                    ]
+                };
 
-                    // These labels appear in the legend and in the tooltips when hovering different arcs
-                    labels: $scope.userGraphData.labels
 
-                },
-                // options: options
-                options: {
-                    scales: {
-                        yAxes: [{
-                            ticks: {
-                                beginAtZero: true
-                            }
+                new Chart(ctx, {
+                    type: "pie",
+                    data: {
+                        labels: $scope.teamGraphAssociateName,
+                        datasets: [{
+                            data: $scope.teamGraphAssociatePoints,
+                            backgroundColor: $scope.backgroundColors,
+                            borderWidth: 1.5
                         }]
-                    },
-                    legend: {
-                        display: false
                     }
-                }
-            });
+                });
 
-            new Chart(ctx2, {
-                type: 'bar',
-                data: rewardData
-            });
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        datasets: [{
+                            data: $scope.userGraphData.data,
+                            backgroundColor: $scope.userGraphData.colors,
+                            // labels: ['October', 'November', 'December']
+                        }],
 
-        }, 1000);
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        labels: $scope.userGraphData.labels
+
+                    },
+                    // options: options
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        },
+                        legend: {
+                            display: false
+                        }
+                    }
+                });
+
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: rewardData
+                });
+
+            }, 1500);
+        }
 
         $scope.getScrumPointsForMonth = function(month) {
             DashboardFactory.getScrumPointsByMonth($scope.loggedUserDetails.id, month).then(
@@ -547,4 +657,5 @@ angular
 
 
         $scope.checkUserType();
+        $scope.loadDashBoard();
     });

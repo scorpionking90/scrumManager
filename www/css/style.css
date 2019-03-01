@@ -52,3 +52,9 @@
 .item .badge+.badge {
     margin-right: 40px !important;
 }
+
+.arrow-dropdown {
+    float: right;
+    font-size: 28px;
+    color: #33cd5f
+}

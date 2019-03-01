@@ -6,7 +6,7 @@
 angular
     .module("starter", ["ionic"])
 
-.run(function($ionicPlatform, $rootScope, $ionicLoading) {
+.run(function($ionicPlatform, $rootScope, $ionicLoading, $window) {
         $ionicPlatform.ready(function() {
             var isPaused = false;
             if (window.cordova && window.cordova.plugins.Keyboard) {
@@ -33,20 +33,6 @@ angular
                     showBackdrop: false
                 });
             });
-
-            //   firebase.initializeApp({
-            //     apiKey: 'AIzaSyBhZOkz5-U1OChjAkcAcV3T2PdU1hc0Gvs',
-            //     // authDomain: '### FIREBASE AUTH DOMAIN ###',
-            //     projectId: 'scrum-manager-3e90e'
-            //   });
-
-            //   // Initialize Cloud Firestore through Firebase
-            //   var db = firebase.firestore();
-
-            // Disable deprecated features
-            //   db.settings({
-            //     timestampsInSnapshots: true
-            //   });
 
             $ionicPlatform.registerBackButtonAction(function(e) {
                 if ($state.is("home")) {
@@ -81,14 +67,9 @@ angular
         $urlRouterProvider,
         $httpProvider,
         $ionicConfigProvider,
-        $locationProvider
     ) {
         $ionicConfigProvider.tabs.position("top");
         $ionicConfigProvider.views.swipeBackEnabled(false);
-        // $locationProvider.html5Mode({
-        //     enabled: true,
-        //     requireBase: false
-        // });
         $httpProvider.interceptors.push(function($rootScope) {
             return {
                 request: function(config) {
@@ -112,21 +93,22 @@ angular
 
         $stateProvider
             .state("dashboard", {
-                url: "/dashboard/:associateId",
+                url: "/dashboard/:associateId/:accessToken",
                 cache: false,
                 templateUrl: "app/dashboard/Dashboard.html",
                 controller: "DashboardController"
+            })
+            .state("home", {
+                url: "/home",
+                cache: false,
+                templateUrl: "app/home/Home.html",
+                controller: "HomeController"
             })
             .state("login", {
                 url: "/login",
                 cache: false,
                 templateUrl: "app/login/Login.html",
                 controller: "LoginController"
-            }).state("home", {
-                url: "/home",
-                cache: false,
-                templateUrl: "app/home/Home.html",
-                controller: "HomeController"
             });
 
         $urlRouterProvider.otherwise("/login");
